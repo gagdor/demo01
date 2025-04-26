@@ -1,0 +1,22 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/log-cleaner', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/log-cleaner']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'log-cleaner'
+      - '--image=gcr.io/$PROJECT_ID/log-cleaner'
+      - '--platform=managed'
+      - '--region=southamerica-east1'
+      - '--set-env-vars=BUCKET_NAME=demo01-bucket-ggoncalves,FILE_NAME=logs/logs.txt'
+      - '--allow-unauthenticated'
+
+images:
+  - 'gcr.io/$PROJECT_ID/log-cleaner'
+
